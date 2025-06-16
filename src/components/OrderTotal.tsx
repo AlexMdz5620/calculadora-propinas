@@ -1,15 +1,17 @@
-import { useMemo } from "react"
+import { useMemo, type Dispatch } from "react"
 // import { useCallback } from "react" **Misma sintaxis, solo que se tiene que colocar un "()" al final de cada llamado de const
 import type { OrderType } from "../types"
 import { formatCurrency } from "../helpers";
+import type { OrderAction } from "../reducers/order-reducer";
 
 type OrderTotalProps = {
     order: OrderType[];
     tip: number;
-    placeOrder: () => void
+    dispatch: Dispatch<OrderAction>
+
 }
 
-export default function OrderTotal({ order, tip, placeOrder }: OrderTotalProps) {
+export default function OrderTotal({ order, tip, dispatch }: OrderTotalProps) {
     const subtotalAmount = useMemo(() => order.reduce((total, item) => total + (item.quantity * item.price), 0), [order]);
     const tipAmount = useMemo(() => subtotalAmount * tip, [tip, subtotalAmount]);
     const totalAmount = useMemo(() => subtotalAmount + tipAmount, [subtotalAmount, tipAmount]);
@@ -32,7 +34,7 @@ export default function OrderTotal({ order, tip, placeOrder }: OrderTotalProps) 
             <button
                 className="w-full bg-black p-3 uppercase text-white font-bold mt-10 rounded-lg disabled:opacity-10"
                 disabled={totalAmount === 0}
-                onClick={() => placeOrder()}
+                onClick={() => dispatch({ type: 'place-order' })}
             >
                 Guardar Orden
             </button>
